@@ -6,7 +6,7 @@ import Panel from '../../../components/Panel';
 import styles from '../../../layouts/Sword.less';
 import func from '../../../utils/Func';
 import { getCookie } from '../../../utils/support';
-import { getSurfacesingleSubmit } from '../../../services/newServices/logistics';
+import { getSurfacesingleSubmit,getlogisticsTemplate } from '../../../services/newServices/logistics';
 import router from 'umi/router';
 import { EXPRESS100DATA,TEMPID } from './data';
 
@@ -23,12 +23,14 @@ class FaceSheetEdit extends PureComponent {
     super(props);
     this.state = {
       data:{},
+      templates:[]
     };
   }
 
   componentWillMount() {
     const { globalParameters } = this.props;
 
+    this.getlogisticsTemplate();
     // 获取详情数据
     this.setState({
       data:globalParameters.detailData
@@ -57,6 +59,18 @@ class FaceSheetEdit extends PureComponent {
     });
   };
 
+  // 获取模板信息
+  getlogisticsTemplate(){
+    getlogisticsTemplate().then(res=>{
+      if(res.code === 200){
+        this.setState({
+          templates:res.data.records
+        });
+      }else {
+        message.error(res.msg);
+      }
+    })
+  };
   onChange = value => {
     let text = ""
     for(let i=0; i< EXPRESS100DATA.length; i++){
@@ -64,14 +78,15 @@ class FaceSheetEdit extends PureComponent {
         text = EXPRESS100DATA[i].name
       }
     }
-    for(let j=0; j< TEMPID.length; j++){
-      if(text === TEMPID[j].value){
-        text = TEMPID[j].id
+    const {data,templates} = this.state;
+    for(let j=0; j< templates.length; j++){
+      if(text === templates[j].templateName){
+        text = templates[j].templateId
       }
     }
-    const {data} = this.state;
     const datas = Object.assign({}, data, {
       tempid: text
+
     })
     this.setState({
       data:datas
@@ -111,7 +126,7 @@ class FaceSheetEdit extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {data} = this.state;
+    const {data,templates} = this.state;
     const formItemLayout = {
       labelCol: {
         span: 8,
@@ -162,9 +177,9 @@ class FaceSheetEdit extends PureComponent {
                     ],
                     initialValue: data.tempid,
                   })(
-                    <Select placeholder="" disabled>
-                      {TEMPID.map((item,index) =>{
-                        return (<Option key={index} value={item.id}>{item.value}</Option>)
+                    <Select placeholder="">
+                      {templates.map((item,index) =>{
+                        return (<Option key={index || 0} value={item.templateId}>{item.templateName}</Option>)
                       })}
                     </Select>
                   )}

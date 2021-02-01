@@ -5,7 +5,7 @@ import Panel from '../../../components/Panel';
 import styles from '../../../layouts/Sword.less';
 import func from '../../../utils/Func';
 import { getCookie } from '../../../utils/support';
-import { getSurfacesingleSave } from '../../../services/newServices/logistics';
+import { getSurfacesingleSave,getlogisticsTemplate } from '../../../services/newServices/logistics';
 import router from 'umi/router';
 import { TEMPID ,EXPRESS100DATA } from './data.js';
 
@@ -20,13 +20,14 @@ class FaceSheetAdd extends PureComponent {
     this.state = {
       data:{
         width:76,
-        height:130
+        height:130,
+        templates:[]
       },
     };
   }
 
   componentWillMount() {
-
+    this.getlogisticsTemplate();
   }
 
   // ============ 提交 ===============
@@ -53,6 +54,21 @@ class FaceSheetAdd extends PureComponent {
     });
   };
 
+  // 获取模板信息
+  getlogisticsTemplate(){
+    getlogisticsTemplate().then(res=>{
+      if(res.code === 200){
+        this.setState({
+          data:{
+            templates:res.data.records
+          }
+        });
+      }else {
+        message.error(res.msg);
+      }
+    })
+  };
+
   onChange = value => {
     let text = ""
     for(let i=0; i< EXPRESS100DATA.length; i++){
@@ -60,16 +76,20 @@ class FaceSheetAdd extends PureComponent {
         text = EXPRESS100DATA[i].name
       }
     }
-    for(let j=0; j< TEMPID.length; j++){
-      if(text === TEMPID[j].value){
-        text = TEMPID[j].id
+
+    const data=this.state.data
+    for(let j=0; j< data.templates.length; j++){
+      if(text === data.templates[j].templateName){
+        text = data.templates[j].templateId
       }
     }
+
     this.setState({
       data:{
         tempids:text,
         width:76,
-        height:130
+        height:130,
+        templates:data.templates
       }
     },()=>{
 
@@ -155,9 +175,9 @@ class FaceSheetAdd extends PureComponent {
                       },
                     ],
                   })(
-                    <Select placeholder="" disabled>
-                      {TEMPID.map((item,index) =>{
-                        return (<Option key={index} value={item.id}>{item.value}</Option>)
+                    <Select placeholder="">
+                      {data.templates.map((item,index) =>{
+                        return (<Option key={index || 0} value={item.templateId}>{item.templateName}</Option>)
                       })}
                     </Select>
                   )}

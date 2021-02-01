@@ -221,24 +221,26 @@ class OrdersEdit extends PureComponent {
         values.productTypeId = productTypeId; 
         values.productId = productId;
       }
-      if (values.logisticsCompany === ''){
-        values.logisticsCompany=null
-      }
-      if (values.logisticsNumber === ''){
-        values.logisticsNumber=null
-      }
+
       if (values.orderNote === ''){
         values.orderNote=null
       }
       if (values.productCoding === ''){
         values.productCoding=null
       }
+
       if (!err) {
-        const params = {
-          ...values
-        };
         const _this=this;
-        if(params.logisticsCompany != detail.logisticsCompany || params.logisticsNumber != detail.logisticsNumber){
+        if(values.logisticsCompany != detail.logisticsCompany || values.logisticsNumber != detail.logisticsNumber){
+          if (values.logisticsCompany === ''){
+            values.logisticsCompany=null
+          }
+          if (values.logisticsNumber === ''){
+            values.logisticsNumber=null
+          }
+          const params = {
+            ...values
+          };
           // if(detail.logisticsStatus){
             Modal.confirm({
               title: '提示',
@@ -287,6 +289,15 @@ class OrdersEdit extends PureComponent {
           //   })
           // }
         }else {
+          if (values.logisticsCompany === ''){
+            values.logisticsCompany=null
+          }
+          if (values.logisticsNumber === ''){
+            values.logisticsNumber=null
+          }
+          const params = {
+            ...values
+          };
           updateData(params).then(res=>{
             if(res.code === 200){
               message.success(res.msg);

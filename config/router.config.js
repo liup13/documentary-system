@@ -358,6 +358,12 @@ export default [
               { path: '/system/timedTasks/update', component: './System/timedTasks/update' },
             ],
           },
+          {
+            path: '/system/labelManagement',
+            routes: [
+              { path: '/system/labelManagement', component: './System/labelManagement/index' },
+            ],
+          },
         ],
       },
       {

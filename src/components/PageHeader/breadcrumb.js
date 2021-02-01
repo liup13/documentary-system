@@ -144,11 +144,12 @@ export default class BreadcrumbView extends PureComponent {
         />
       );
     }
+    //暂时取消面包屑展示----xiewenxin 
     // 根据 location 生成 面包屑
     // Generate breadcrumbs based on location
-    if (routerLocation && routerLocation.pathname) {
-      return this.conversionFromLocation(routerLocation, breadcrumbNameMap);
-    }
+    // if (routerLocation && routerLocation.pathname) {
+    //   return this.conversionFromLocation(routerLocation, breadcrumbNameMap);
+    // }
     return null;
   };
 

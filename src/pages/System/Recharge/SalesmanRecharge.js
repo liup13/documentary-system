@@ -76,15 +76,31 @@ class SalesmanRecharge extends PureComponent {
   handleSubmit = (item) => {
     console.log(item)
     // message.error("充值功能正在维护!如有需要请联系负责人充值")
-    getUnWeChatBind(2).then(res=>{
+    // getUnWeChatBind(2).then(res=>{
+    //   console.log(res)
+    //   if(res.code === 200){
+    //     const url=res.data+"&money="+item.price;
+    //     this.setState({
+    //       bindingQRCode:url,
+    //       bindingQRCodeVisible:true,
+    //       money:item.price
+    //     })
+    //   }else {
+    //     message.error(res.msg)
+    //   }
+    // })
+    getUnWeChatBind(2,item.price).then(res=>{
       console.log(res)
       if(res.code === 200){
-        const url=res.data+"&money="+item.price;
-        this.setState({
-          bindingQRCode:url,
-          bindingQRCodeVisible:true,
-          money:item.price
-        })
+        const url="http://web.gendanbao.com.cn:9010/system/topup/amount"+res.data
+        // const url="http://47.102.204.79:9010/system/topup/amount"+res.data
+        window.open(url,"_blank");
+        // const url=res.data+"&money="+item.price;
+        // this.setState({
+        //   bindingQRCode:url,
+        //   bindingQRCodeVisible:true,
+        //   money:item.price
+        // })
       }else {
         message.error(res.msg)
       }
@@ -112,15 +128,20 @@ class SalesmanRecharge extends PureComponent {
       if(e.target.value % 10 == 0){
         // message.error("充值功能正在维护!如有需要请联系负责人充值")
 
-        getUnWeChatBind(2).then(res=>{
+        getUnWeChatBind(2,Number(price)).then(res=>{
+          console.log(res)
           if(res.code === 200){
-            const url=res.data+"&money="+price;
-            console.log(url)
-            this.setState({
-              bindingQRCode:url,
-              bindingQRCodeVisible:true,
-              money:price
-            })
+            // const url="http://121.37.251.134:9010/system/topup/amount"+res.data
+            const url="http://web.gendanbao.com.cn:9010/system/topup/amount"+res.data;
+
+            // const url="http://47.102.204.79:9010/system/topup/amount"+res.data
+            window.open(url,"_blank");
+            // const url=res.data+"&money="+item.price;
+            // this.setState({
+            //   bindingQRCode:url,
+            //   bindingQRCodeVisible:true,
+            //   money:item.price
+            // })
           }else {
             message.error(res.msg)
           }

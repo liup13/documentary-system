@@ -61,6 +61,12 @@ export async function getSurfacesingleSave(params) {
     body: params,
   });
 }
+export async function getlogisticsTemplate(params) {
+  return request('/api/logistics_template/template/list', {
+    method: 'POST',
+    body: params || {},
+  });
+}
 export async function getSurfacesingleRemove(params) {
   return request('/api/logistics/surfacesingle/remove', {
     method: 'POST',

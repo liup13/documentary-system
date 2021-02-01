@@ -7,7 +7,7 @@ import {
   Button,
   message,
   Radio,
-  Table, Select, Icon, Tooltip,Upload
+  Table, Select, Icon, Tooltip, Upload, Divider,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -30,7 +30,7 @@ class timeConsuming extends PureComponent {
       data:[],
       pagination: {},
       params:{
-        size:1,
+        size:10,
         current:1,
       },
     };
@@ -38,14 +38,23 @@ class timeConsuming extends PureComponent {
 
 
   componentWillMount() {
-    this.get0rdertimeinfotask()
+    const {params}=this.state;
+    const {timeConsumingList}=this.props;
+
+    if(timeConsumingList.length > 0){
+      params.outOrderNo = timeConsumingList[0].outOrderNo
+    }
+    this.get0rdertimeinfotask(params)
   }
 
-  get0rdertimeinfotask = () =>{
-    const {timeConsumingList}=this.props;
-    const {params}=this.state;
-    ordertimeinfotask(params).then(res=>{
-      console.log(res)
+  get0rdertimeinfotask = (params,key) =>{
+    let p=''
+    if(key){
+      p={...params,[key]:key}
+    }else {
+      p={...params}
+    }
+    ordertimeinfotask(p).then(res=>{
       if(res.code === 200){
         this.setState({
           data:{
@@ -68,20 +77,44 @@ class timeConsuming extends PureComponent {
 
   };
 
+  handleTableChange = (pagination,filters, sorter) => {
+    console.log(sorter)
+    const pager = { ...this.state.pagination };
+    this.setState({
+      pagination: pager,
+    });
+    const {params}=this.state;
+
+    console.log(params)
+
+    let columnKey=''
+    if(sorter.order){
+      params.current = 1
+      if(sorter.order === "ascend"){
+        params.orderBy = true
+      }else {
+        params.orderBy = false
+      }
+      columnKey = sorter.columnKey
+    }else {
+      params.current = pagination.current;
+    }
+    this.get0rdertimeinfotask(params,columnKey)
+  };
+
 
   render() {
     const {
       form: { getFieldDecorator },
       timeConsumingVisible,
       handleCancelTimeConsuming,
+      handleDetails
       } = this.props;
 
     const {
       data,
       pagination
       } = this.state;
-
-    console.log(data)
 
     const columns=[
       {
@@ -93,17 +126,32 @@ class timeConsuming extends PureComponent {
         title: '跟进耗时',
         dataIndex: 'followTimeConsuming',
         width: 200,
+        sorter:true,
       },
       {
         title: '跟进时效',
         dataIndex: 'followAgeing',
         width: 200,
+        sorter:true,
       },
       {
         title: '激活耗时',
         dataIndex: 'activateTimeConsuming',
         width: 200,
+        sorter:true,
       },
+      {
+        title: '操作',
+        key: 'operation',
+        fixed: 'right',
+        render: (text,row) => {
+          return(
+            <div>
+              <a onClick={()=>handleDetails(row)}>详情</a>
+            </div>
+          )
+        },
+      }
     ]
 
     return (
@@ -120,7 +168,7 @@ class timeConsuming extends PureComponent {
             </Button>,
           ]}
         >
-          <Table rowKey={(record, index) => `${index}`} dataSource={data.list} pagination={false} columns={columns} />
+          <Table rowKey={(record, index) => `${index}`} dataSource={data.list} pagination={pagination} columns={columns} onChange={this.handleTableChange}/>
         </Modal>
       </div>
     );

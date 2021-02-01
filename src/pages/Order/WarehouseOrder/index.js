@@ -559,7 +559,7 @@ class AllOrdersList extends PureComponent {
         <Form.Item label="销售">
           {getFieldDecorator('salesman', {
               })(
-              <Select placeholder={"请选择销售"} style={{ width: 120 }}>
+              <Select placeholder={"请选择销售"} style={{ width: 200 }}>
                 {salesmanList.map((item,index)=>{
                   return (<Option key={index} value={item.userAccount}>{item.userName}</Option>)
                 })}

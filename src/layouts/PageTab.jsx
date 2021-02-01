@@ -140,6 +140,10 @@ class App extends Component {
     if (pathname !== preProps.tabs.pathname) {
       // 当路由发生改变时，显示相应tab页面
       this.getData();
+    }else{
+      //编辑、新增返回刷新页面
+      const { keys } = this.state;
+      keys[pathname] = Date.now();
     }
   }
 

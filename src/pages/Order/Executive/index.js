@@ -199,6 +199,7 @@ class AllOrdersList extends PureComponent {
       })
     })
   }
+
   getDataList = () => {
     const {params} = this.state;
     this.setState({
@@ -216,8 +217,11 @@ class AllOrdersList extends PureComponent {
   // 根据组织获取对应的业务员数据
   getSalesmanList = (value = "all_all") => {
     getCurrentsalesman(value).then(res=>{
+
+      console.log(res,"!!!!!!!!!!!!!!!")
+
       if(res.code === 200){
-        res.data.unshift('全部');
+        res.data.unshift({key:'全部',value:''});
         this.setState({
           salesmanList:res.data
         })
@@ -265,9 +269,11 @@ class AllOrdersList extends PureComponent {
     let text = "";
     if(payload.salesman === "全部" || payload.salesman === ""){
       for(let i=0; i<salesmanList.length; i++){
-        text +=salesmanList[i]+","
+        if(salesmanList[i].value){
+          text +=salesmanList[i].value+","
+        }
       }
-      payload.salesman = text.replace(/^,+/,"").replace(/,+$/,"").substr(3);
+      payload.salesman = text.replace(/^,+/,"").replace(/,+$/,"");
     }else{
       payload.salesman = payload.salesman
     }
@@ -359,9 +365,9 @@ class AllOrdersList extends PureComponent {
         <Form.Item label="销售">
           {getFieldDecorator('salesman', {
               })(
-              <Select placeholder={"请选择销售"} style={{ width: 120 }}>
+              <Select placeholder={"请选择销售"} style={{ width: 200 }}>
                 {salesmanList.map((item,index)=>{
-                  return (<Option key={index} value={item}>{item}</Option>)
+                  return (<Option key={index} value={item.value}>{item.key}</Option>)
                 })}
               </Select>
             )}
@@ -776,6 +782,9 @@ class AllOrdersList extends PureComponent {
     if(selectedRows.length <= 0){
       return message.info('请至少选择一条数据');
     }
+    if(selectedRows.length > 1){
+      return message.info('只能选择一条数据');
+    }
     let list=[];
     selectedRows.map( item =>{
       list.push({
@@ -792,7 +801,7 @@ class AllOrdersList extends PureComponent {
       keyboard:false,
       onOk:() => {
         return new Promise((resolve, reject) => {
-          updateConfirmTag(list).then(res=>{
+          updateConfirmTag({id:selectedRows[0].id,confirmTag:6}).then(res=>{
             if(res.code === 200){
               message.success(res.msg);
               this.setState({
@@ -1450,12 +1459,16 @@ class AllOrdersList extends PureComponent {
 
   // 打开耗时检测弹窗
   handleTimeConsuming = () => {
-    const {selectedRows} = this.state;
+    const { selectedRows } = this.state;
+    if(selectedRows.length > 1){
+      return message.info('最多只能选择一条数据查看');
+    }
     this.setState({
       timeConsumingVisible:true,
       timeConsumingList:selectedRows
     })
   }
+
   // 关闭耗时检测弹窗
   handleCancelTimeConsuming = () => {
     this.setState({
@@ -2446,6 +2459,7 @@ class AllOrdersList extends PureComponent {
           <TimeConsuming
             timeConsumingVisible={timeConsumingVisible}
             timeConsumingList={timeConsumingList}
+            handleDetails={this.handleDetails}
             handleCancelTimeConsuming={this.handleCancelTimeConsuming}
           />
         ):""}
